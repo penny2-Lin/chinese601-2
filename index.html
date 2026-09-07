@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微風村的秋收慶典 - 詞語互動自學網</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #ff9a9e;
+            --secondary-color: #fecfef;
+            --text-color: #4a4a4a;
+            --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --blank-color: #007bff;
+            --correct-color: #28a745;
+            --wrong-color: #dc3545;
+            --hover-color: #f1f8ff;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1200px;
+            margin: 20px auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 800px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .story-section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 3px solid #ffe6e6;
+            position: relative;
+        }
+
+        h1 {
+            text-align: center;
+            color: #d87093;
+            font-size: 2em;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 25px;
+            font-size: 1em;
+        }
+
+        p {
+            line-height: 2;
+            font-size: 1.15em;
+            text-indent: 2em;
+            margin-bottom: 15px;
+        }
+
+        .blank {
+            display: inline-block;
+            min-width: 60px;
+            height: 30px;
+            border-bottom: 3px dashed var(--blank-color);
+            color: var(--blank-color);
+            text-align: center;
+            font-weight: bold;
+            margin: 0 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-indent: 0;
+            vertical-align: bottom;
+            line-height: 30px;
+        }
+
+        .blank:hover {
+            background-color: #e6f2ff;
+            border-radius: 5px;
+        }
+
+        .blank.filled {
+            border-bottom-style: solid;
+            color: #333;
+            background-color: #f0f8ff;
+            border-radius: 5px;
+        }
+
+        .blank.correct {
+            color: var(--correct-color);
+            border-bottom-color: var(--correct-color);
+            background-color: #e8f5e9;
+        }
+
+        .blank.wrong {
+            color: var(--wrong-color);
+            border-bottom-color: var(--wrong-color);
+            background-color: #ffebee;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .panel {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 3px solid #e0f7fa;
+        }
+
+        .panel-title {
+            color: #00838f;
+            font-size: 1.3em;
+            margin-top: 0;
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .word-bank {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .word-btn {
+            background-color: #fff;
+            border: 2px solid #b2ebf2;
+            border-radius: 12px;
+            padding: 10px 15px;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #006064;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .word-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            background-color: #e0f7fa;
+        }
+
+        .word-btn.selected {
+            background-color: #00bcd4;
+            color: white;
+            border-color: #00acc1;
+        }
+
+        .word-btn.used {
+            display: none;
+        }
+
+        #dictionary-content {
+            font-size: 1em;
+            line-height: 1.6;
+            color: #555;
+            min-height: 120px;
+        }
+
+        .dict-word {
+            font-size: 1.4em;
+            color: #d32f2f;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .dict-meaning {
+            margin-bottom: 10px;
+        }
+
+        .dict-example {
+            background-color: #fff8e1;
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            font-style: normal;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .action-btn {
+            background: linear-gradient(45deg, #4CAF50, #8BC34A);
+            border: none;
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.6);
+        }
+        
+        .action-btn:disabled {
+            background: #cccccc;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Decorative elements */
+        .decor {
+            position: absolute;
+            font-size: 2em;
+            opacity: 0.5;
+            user-select: none;
+        }
+        .leaf1 { top: 10px; left: 10px; transform: rotate(-20deg); }
+        .leaf2 { bottom: 10px; right: 10px; transform: rotate(45deg); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Story Section -->
+        <main class="story-section">
+            <span class="decor leaf1">🍃</span>
+            <span class="decor leaf2">🍂</span>
+            <h1>🍄 微風村的秋收慶典</h1>
+            <div class="subtitle">讀一讀下面的故事，把右邊的詞語填入正確的空格中吧！</div>
+            
+            <div id="story-content">
+                <p>秋天的陽光灑在微風村，帶來一絲涼意，也提醒著村民們乾燥的冬季即將到來。村長山羊爺爺總是教導大家，做事情要未雨<span class="blank" data-answer="綢繆"></span>，不能等到困難發生才來想辦法。於是，年輕的動物們紛紛拿起工具，在村子的廣場中央開始<span class="blank" data-answer="掘井"></span>，希望能在溪水枯竭前，確保大家都有乾淨的水源可用。</p>
+                
+                <p>森林裡的藤蔓四處生長，<span class="blank" data-answer="纏繞"></span>在木柵欄上。小松鼠們靈活地穿梭其間，偶爾覺得這些藤蔓像是一種<span class="blank" data-answer="束縛"></span>，阻擋了他們奔跑的速度，但他們知道，這些植物也能保護村莊阻擋冷風。</p>
+                
+                <p>為了迎接即將到來的豐收慶典，村裡的巧手浣熊製作了許多精美的<span class="blank" data-answer="陶器"></span>，其中最引人注目的，是一個肚子圓滾滾、用來盛裝甜美果汁的<span class="blank" data-answer="瓦缶"></span>。慶典當天，家家戶戶都拿出了拿手好菜。雖然只是簡單的堅果和野莓，但在大家的心中，這些充滿感恩的食物，簡直比皇宮裡的<span class="blank" data-answer="珍饈"></span>還要美味。</p>
+                
+                <p>山羊爺爺笑著看著大家，他不忘提醒村民們要懂得<span class="blank" data-answer="施惠"></span>於人。因此，大家特別<span class="blank" data-answer="預留"></span>了一部分的糧食，準備送給山頭另一邊，收成不佳的小豬村。</p>
+                
+                <p>慶典高潮時，小熊因為太過興奮，一邊跳舞一邊端著蜂蜜罐又跑又跳。結果一個不小心，他重重地摔了一跤，蜂蜜灑了滿地。山羊爺爺摸摸小熊的頭，溫柔地說：「開心是好事，但千萬別忘了注意安全，免得<span class="blank" data-answer="樂極生悲"></span>呀！」</p>
+            </div>
+
+            <div class="controls">
+                <button id="check-btn" class="action-btn">✨ 核對答案 ✨</button>
+            </div>
+        </main>
+
+        <!-- Sidebar Section -->
+        <aside class="sidebar">
+            <div class="panel">
+                <h3 class="panel-title">🧩 詞庫區</h3>
+                <div class="subtitle" style="margin-bottom:10px; font-size:0.9em;">點擊詞語後，再點擊文章中的底線填入</div>
+                <div class="word-bank" id="word-bank">
+                    <!-- Word buttons will be generated here -->
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3 class="panel-title">📖 詞語小百科</h3>
+                <div id="dictionary-content">
+                    <div style="text-align:center; color:#999; margin-top:40px;">
+                        點擊上方的詞語，<br>這裡會顯示有趣的解釋和例句喔！
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // Vocabulary data
+        const vocabulary = [
+            { word: "綢繆", meaning: "纏繞束縛，本課指修補器物，讓它更加堅固。", example: "颱風即將來襲，我們應未雨綢繆做好防災準備。" },
+            { word: "掘井", meaning: "挖井。", example: "古代先民生活很辛苦，得先掘井才能汲水，現代人幸福多了，有方便的自來水可用。" },
+            { word: "纏繞", meaning: "圍繞束縛。", example: "絲瓜藤纏繞著竹架向上攀生。" },
+            { word: "束縛", meaning: "拘束或限制。", example: "小鹿掙開繩圈的束縛，迅速跑向叢林。" },
+            { word: "瓦缶", meaning: "一種有蓋、腹大口小，用來盛裝酒或水的陶器。", example: "瓦缶不僅可以作為容器，也可以作為敲擊樂器。" },
+            { word: "珍饈", meaning: "珍奇美味的食物。", example: "雖然只是青菜豆腐，但只要是媽媽煮的，全家人都視為珍饈佳肴。" },
+            { word: "陶器", meaning: "用陶土燒製的器物。坯質不透明，具吸水性，質地較瓷器粗糙，可塗上不同的顏色或彩色花紋。", example: "陶器的形式、花紋等特徵，常是考古學上重要的斷代依據。" },
+            { word: "施惠", meaning: "給予恩惠、德澤。", example: "他施惠於人，從不求回報，這樣的胸襟令人敬佩。" },
+            { word: "預留", meaning: "事先保留。", example: "家人知道他今天會比較晚回家，已先幫他預留飯菜。" },
+            { word: "樂極生悲", meaning: "歡樂至極，往往會轉生悲愁。", example: "一聽到自己被錄取，他高興的從椅子上跳了起來，結果扭傷腳踝，真是樂極生悲。" }
+        ];
+
+        let selectedWordBtn = null;
+        const wordBankContainer = document.getElementById('word-bank');
+        const dictionaryContent = document.getElementById('dictionary-content');
+        const blanks = document.querySelectorAll('.blank');
+        const checkBtn = document.getElementById('check-btn');
+
+        // Function to shuffle an array (Fisher-Yates algorithm)
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [
+                    array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        // Initialize Word Bank
+        function initWordBank() {
+            // Shuffle the vocabulary array so it doesn't match the story order
+            const shuffledVocab = shuffle([...vocabulary]);
+
+            shuffledVocab.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = 'word-btn';
+                btn.textContent = item.word;
+                btn.dataset.word = item.word;
+                
+                // Click event for word bank buttons
+                btn.addEventListener('click', () => {
+                    // Update selection visuals
+                    if (selectedWordBtn) {
+                        selectedWordBtn.classList.remove('selected');
+                    }
+                    btn.classList.add('selected');
+                    selectedWordBtn = btn;
+
+                    // Update dictionary panel
+                    dictionaryContent.innerHTML = `
+                        <div class="dict-word">${item.word}</div>
+                        <div class="dict-meaning"><strong>📖 意思：</strong>${item.meaning}</div>
+                        <div class="dict-example"><strong>✍️ 例句：</strong>${item.example}</div>
+                    `;
+                });
+
+                wordBankContainer.appendChild(btn);
+            });
+        }
+
+        // Setup Blank Click Events
+        blanks.forEach(blank => {
+            // Initial placeholder text if needed, handled via css min-width mostly
+            
+            blank.addEventListener('click', function() {
+                // Scenario 1: Blank is currently filled -> User wants to remove the word
+                if (this.classList.contains('filled')) {
+                    const currentWord = this.textContent;
+                    
+                    // Find the button in word bank and show it again
+                    const btnToShow = document.querySelector(`.word-btn[data-word="${currentWord}"]`);
+                    if (btnToShow) {
+                        btnToShow.classList.remove('used');
+                    }
+
+                    // Reset this blank
+                    this.textContent = '';
+                    this.classList.remove('filled', 'correct', 'wrong');
+                    
+                    // Clear dictionary if needed or leave as is
+                } 
+                // Scenario 2: Blank is empty and a word is selected -> User wants to fill it
+                else if (selectedWordBtn) {
+                    const wordToFill = selectedWordBtn.textContent;
+                    
+                    // Fill the blank
+                    this.textContent = wordToFill;
+                    this.classList.add('filled');
+                    this.classList.remove('correct', 'wrong'); // Reset colors just in case
+                    
+                    // Hide the button from word bank
+                    selectedWordBtn.classList.remove('selected');
+                    selectedWordBtn.classList.add('used');
+                    selectedWordBtn = null;
+                    
+                    // Reset dictionary message
+                    dictionaryContent.innerHTML = `
+                        <div style="text-align:center; color:#999; margin-top:40px;">
+                            詞語已填入文章！<br>請繼續點擊其他詞語。
+                        </div>
+                    `;
+                }
+            });
+        });
+
+        // Check Answers Event
+        checkBtn.addEventListener('click', () => {
+            let allFilled = true;
+            let allCorrect = true;
+
+            blanks.forEach(blank => {
+                // Check if filled
+                if (!blank.classList.contains('filled')) {
+                    allFilled = false;
+                } else {
+                    // Validate answer
+                    const expectedAnswer = blank.dataset.answer;
+                    const userAnswer = blank.textContent;
+                    
+                    blank.classList.remove('correct', 'wrong'); // reset
+                    
+                    if (userAnswer === expectedAnswer) {
+                        blank.classList.add('correct');
+                    } else {
+                        blank.classList.add('wrong');
+                        allCorrect = false;
+                    }
+                }
+            });
+
+            if (!allFilled) {
+                alert('還有空格沒有填完喔！請把所有詞語都填入文章中。');
+            } else if (allCorrect) {
+                alert('太棒了！你答對了所有的詞語，微風村的動物們為你歡呼！ 🎉');
+                checkBtn.textContent = "🌟 完美通關 🌟";
+                checkBtn.disabled = true;
+            } else {
+                alert('哎呀，有幾個詞語放錯位置了。紅色的部分是錯誤的，請點擊它們退回詞庫，再試著重新填寫看看喔！💪');
+            }
+        });
+
+        // Initialize on load
+        window.onload = () => {
+            initWordBank();
+        };
+    </script>
+</body>
+</html>
